@@ -20,6 +20,7 @@ import Medical from './pages/Medical';
 import Insurance from './pages/Insurance';
 import Document from './pages/Document';
 import PatientDashboard from './pages/Dashboard';
+import Dashboard from './pages/Admin';
 
 const App = () => {
   useEffect(() => {
@@ -57,6 +58,7 @@ const App = () => {
               <Route path="/my-profile" element={<PatientDashboard />} />
               <Route path="/my-appointments" element={<MyAppointments />} />
               <Route path="/appointment/:docId" element={<Appointment />} />
+              <Route path="/admin/dashboard" element={<Dashboard />} />
             </Routes>
           </div>
 
