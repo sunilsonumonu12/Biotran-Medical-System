@@ -122,14 +122,18 @@ export default function PatientDashboard() {
           <div className="relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 opacity-90" />
             <div className="relative p-6 sm:p-8 flex flex-col md:flex-row items-center gap-6">
-              <div className="w-32 h-32 rounded-full border-4 border-white shadow-xl overflow-hidden flex-shrink-0">
-                <img
-                  src={user?.profileImageBase64 
-                    ? `data:image/jpeg;base64,${user.profileImageBase64}`
-                    : `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=random`}
-                  alt={`${user?.name}'s profile`}
-                  className="w-full h-full object-cover"
-                />
+            <div className="w-32 h-32 rounded-full border-4 border-white shadow-xl overflow-hidden flex-shrink-0">
+
+            <img 
+  src={
+    user?.image?.mimeType && user?.image?.base64
+      ? `data:${user.image.mimeType};base64,${user.image.base64}`
+      : assets.profile_pic
+  }
+  alt="Profile" 
+  className="w-full h-full object-cover"
+/>
+
               </div>
               <div className="text-center md:text-left">
                 <h2 className="text-3xl font-bold text-white mb-2">{user?.name}</h2>

@@ -41,9 +41,9 @@ const Navbar = ({ toggleDarkMode, darkMode }) => {
             <NavLink to="/contact" className={({ isActive }) => `text-gray-300 hover:text-white transition duration-300 ${isActive ? 'text-white font-bold' : ''}`}>
               <li className="p-2 rounded-md hover:bg-gray-700 transition duration-300">Contact</li>
             </NavLink>
-            {/* <NavLink to="/show-data" className={({ isActive }) => `text-gray-300 hover:text-white transition duration-300 ${isActive ? 'text-white font-bold' : ''}`}>
+            <NavLink to="/show-data" className={({ isActive }) => `text-gray-300 hover:text-white transition duration-300 ${isActive ? 'text-white font-bold' : ''}`}>
               <li className="p-2 rounded-md hover:bg-gray-700 transition duration-300">Show Data</li>
-            </NavLink> */}
+            </NavLink>
             <NavLink to="/doctors" className={({ isActive }) => `text-gray-300 hover:text-white transition duration-300 ${isActive ? 'text-white font-bold' : ''}`}>
               <li className="p-2 rounded-md hover:bg-gray-700 transition duration-300">Doctors</li>
             </NavLink>

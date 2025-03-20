@@ -10,12 +10,17 @@ import { AppContext } from "../context/AppContext";
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useContext(AppContext);
+  const [isDoctor, setIsDoctor] = useState(false); // false = Patient, true = Doctor
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     rememberMe: false,
   });
   const [loading, setLoading] = useState(false);
+
+  const handleToggle = (role) => {
+    setIsDoctor(role === "doctor");
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -28,25 +33,34 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-  
+
     try {
-      const response = await axios.post('http://localhost:4000/api/user/login', {
+      // Choose endpoint based on the toggle state
+      const endpoint = isDoctor 
+        ? 'http://localhost:4000/api/doctor/login'
+        : 'http://localhost:4000/api/user/login';
+
+      const response = await axios.post(endpoint, {
         email: formData.email,
-        password: formData.password
+        password: formData.password,
       });
-      
-      if (response.data.success) {
-        try {
-          // Pass rememberMe state to login function
-          login(response.data.user, formData.rememberMe);
-          navigate('/');
-          toast.success('Login successful!');
-        } catch (storageError) {
-          console.error('Storage error:', storageError);
-          // Still allow login but notify user about storage issue
-          toast.warning('Logged in but preferences could not be saved');
-          navigate('/');
+
+      if (response.data.success && response.data.token) {
+        // Store token
+        localStorage.setItem('jwtToken', response.data.token);
+
+        // Set default Authorization header for future requests
+        axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+
+        // Update the auth context; note that the response field differs based on role
+        if (isDoctor) {
+          login(response.data.doctor, response.data.token);
+        } else {
+          login(response.data.user, response.data.token);
         }
+
+        toast.success('Login successful!');
+        navigate('/');
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -57,7 +71,6 @@ const Login = () => {
   };
 
   const handleGoogleSignIn = () => {
-    // Placeholder for Google Sign In functionality
     console.log("Google Sign In");
     toast.info("Google Sign In functionality not implemented yet");
   };
@@ -66,6 +79,22 @@ const Login = () => {
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-indigo-600">
       <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
         <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Login</h2>
+        
+        {/* Toggle buttons for patient and doctor */}
+        <div className="mb-4 flex justify-center">
+          <button 
+            onClick={() => handleToggle("patient")}
+            className={`px-4 py-2 border ${!isDoctor ? 'bg-blue-500 text-white' : 'bg-white text-blue-500'} rounded-l focus:outline-none`}
+          >
+            Patient
+          </button>
+          <button 
+            onClick={() => handleToggle("doctor")}
+            className={`px-4 py-2 border ${isDoctor ? 'bg-blue-500 text-white' : 'bg-white text-blue-500'} rounded-r focus:outline-none`}
+          >
+            Doctor
+          </button>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

@@ -1,7 +1,7 @@
 import userModel from '../models/userModel.js';
 import validator from 'validator';
 import upload from '../middlewares/multer.js';
-
+import jwt from 'jsonwebtoken';
 const signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -30,7 +30,18 @@ const signup = async (req, res) => {
 
     const newUser = new userModel(userData);
     await newUser.save();
-    res.json({ success: true, message: 'Signup successful' });
+    const token = jwt.sign(
+      {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    // Return the token along with success message
+    res.json({ success: true, message: 'Signup successful', token });
 
   } catch (error) {
     console.error("Signup error:", error);
@@ -151,6 +162,50 @@ const updateAddress = async (req, res) => {
   }
 };
 
+const getCurrentUser = async (req, res) => {
+  try {
+    const user = await userModel.findById(req.user.id)
+      .select('-password -documents.prescription.data -documents.medicalReport.data -documents.insurance.data');
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Return only necessary user data
+    res.json({
+      success: true,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        image: user.image,
+        gender: user.gender,
+        dob: user.dob,
+        phone: user.phone,
+        bloodGroup: user.bloodGroup,
+        age: user.age,
+        emergencyContact: user.emergencyContact,
+        allergies: user.allergies,
+        vaccinationHistory: user.vaccinationHistory,
+        healthInsurancePolicy: user.healthInsurancePolicy,
+        doctorAssigned: user.doctorAssigned,
+        permanentAddress: user.permanentAddress,
+        city: user.city,
+        state: user.state,
+        country: user.country
+      }
+    });
+  } catch (error) {
+    console.error('Get current user error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+};
 export const updateUserDocuments = async (req, res) => {
   try {
       const { email } = req.body;
@@ -241,16 +296,29 @@ const login = async (req, res) => {
       });
     }
 
-    res.json({
-      success: true,
-      message: "Login successful",
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        image: user.image
-      }
-    });
+// Generate JWT token
+const token = jwt.sign(
+  {
+    id: user._id,
+    name: user.name,
+    email: user.email
+  },
+  process.env.JWT_SECRET,
+  { expiresIn: '1h' }
+);
+
+// Return token, user details, and success message
+res.json({
+  success: true,
+  message: "Login successful",
+  token,
+  user: {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    image: user.image
+  }
+});;
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -286,4 +354,4 @@ export const getUserDocument = async (req, res) => {
   }
 };
 
-export { signup, login , getUsers, updateUser,updateAddress};
+export { signup, login , getUsers, updateUser,updateAddress,getCurrentUser};

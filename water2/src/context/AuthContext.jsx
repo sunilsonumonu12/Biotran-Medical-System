@@ -1,16 +1,14 @@
-import { createContext, useState, useEffect } from "react";
-import { doctors as doctorsData } from "../assets/assets";
-import axios from "axios";
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import axios from 'axios';
 
-export const AppContext = createContext()
+const AuthContext = createContext();
 
-const AppContextProvider = (props) => {
-  const [user, setUser] = useState(null);
+export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [doctors, setDoctors] = useState(doctorsData);
 
-  // Check for token and user data on mount
+  // Check token and fetch user data on mount
   useEffect(() => {
     const storedToken = localStorage.getItem('jwtToken');
     if (storedToken) {
@@ -22,7 +20,6 @@ const AppContextProvider = (props) => {
     }
   }, []);
 
-  // Fetch user data using stored token
   const fetchUserData = async () => {
     try {
       const response = await axios.get('http://localhost:4000/api/user/me');
@@ -31,7 +28,7 @@ const AppContextProvider = (props) => {
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
-      // If token is invalid, logout
+      // Clear invalid token
       handleLogout();
     } finally {
       setLoading(false);
@@ -39,49 +36,30 @@ const AppContextProvider = (props) => {
   };
 
   const handleLogin = async (userData, token) => {
-    setUser(userData);
     setToken(token);
+    setUser(userData);
     localStorage.setItem('jwtToken', token);
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   };
 
   const handleLogout = () => {
-    setUser(null);
     setToken(null);
+    setUser(null);
     localStorage.removeItem('jwtToken');
     delete axios.defaults.headers.common['Authorization'];
   };
 
-  // Add axios interceptor for handling token expiration
-  useEffect(() => {
-    const interceptor = axios.interceptors.response.use(
-      (response) => response,
-      (error) => {
-        if (error.response?.status === 401) {
-          handleLogout();
-        }
-        return Promise.reject(error);
-      }
-    );
-
-    return () => axios.interceptors.response.eject(interceptor);
-  }, []);
-
-  const value = { 
-    doctors,
-    setDoctors,
-    user,
+  const value = {
     token,
+    user,
+    loading,
     login: handleLogin,
-    logout: handleLogout,
-    loading
+    logout: handleLogout
   };
 
   return (
-    <AppContext.Provider value={value}>
-      {!loading && props.children}
-    </AppContext.Provider>
+    <AuthContext.Provider value={value}>
+      {!loading && children}
+    </AuthContext.Provider>
   );
 };
-
-export default AppContextProvider;

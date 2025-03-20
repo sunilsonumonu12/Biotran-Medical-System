@@ -11,8 +11,8 @@ const doctorSchema = new mongoose.Schema({
   fees: { type: Number, required: true },
   address: { type: String, required: true },
   image: {
-    base64: { type: String, required: true },
-    mimeType: { type: String, required: true },
+    base64: { type: String, required: false },
+    mimeType: { type: String, required: false },
   },
   available: { type: Boolean, required: true },
   date: { type: Date, default: Date.now },
