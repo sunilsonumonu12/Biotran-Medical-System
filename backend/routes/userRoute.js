@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { login,getUsers,signup , updateUser, updateAddress, getUserDocument, updateUserDocuments,getCurrentUser} from '../controllers/userController.js';
+import { login,getUsers,signup , updateUser, updateAddress, getUserDocument, updateUserDocuments,getCurrentUser,assignDoctor} from '../controllers/userController.js';
 import upload from '../middlewares/multer.js';
 import { verifyToken } from '../middlewares/verifyToken.js';
 
@@ -8,7 +8,7 @@ const userRouter = express.Router();
 
 const storage = multer.memoryStorage();
 const uploads = multer({ storage: storage });
-
+userRouter.post("/assign-doctor", verifyToken, assignDoctor);
 userRouter.get('/me', verifyToken, getCurrentUser); 
 userRouter.post('/signup', upload.single('image'), signup);
 userRouter.post('/login', login);

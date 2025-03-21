@@ -61,7 +61,7 @@ export default function Sidebar({ toggleDarkMode, darkMode }) {
     { id: "personnel", icon: <User className="h-5 w-5" />, label: "Personnel Information", path: "/my-profile/dashboard" },
     { id: "address", icon: <MapPin className="h-5 w-5" />, label: "Address Information", path: "/my-profile/address" }, // Add path
     { id: "documents", icon: <Camera className="h-5 w-5" />, label: "Photo & Documents" , path: "/my-profile/documents"},
-    // { id: "medical", icon: <Stethoscope className="h-5 w-5" />, label: "Medical History" , path: "/my-profile/medical"},
+    { id: "medical", icon: <Stethoscope className="h-5 w-5" />, label: "Doctor Assign" , path: "/my-profile/medical"},
     // { id: "insurance", icon: <CreditCard className="h-5 w-5" />, label: "Insurance Details", path: "/my-profile/insurance" },
   ];
 

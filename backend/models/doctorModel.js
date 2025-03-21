@@ -14,6 +14,7 @@ const doctorSchema = new mongoose.Schema({
     base64: { type: String, required: false },
     mimeType: { type: String, required: false },
   },
+  patients: [{ type: String }],
   available: { type: Boolean, required: true },
   date: { type: Date, default: Date.now },
 });

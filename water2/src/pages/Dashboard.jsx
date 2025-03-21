@@ -125,14 +125,14 @@ export default function PatientDashboard() {
             <div className="w-32 h-32 rounded-full border-4 border-white shadow-xl overflow-hidden flex-shrink-0">
 
             <img 
-  src={
-    user?.image?.mimeType && user?.image?.base64
-      ? `data:${user.image.mimeType};base64,${user.image.base64}`
-      : assets.profile_pic
-  }
-  alt="Profile" 
-  className="w-full h-full object-cover"
-/>
+          src={
+            user?.image?.mimeType && user?.image?.base64
+              ? `data:${user.image.mimeType};base64,${user.image.base64}`
+              : assets.profile_pic
+          }
+          alt="Profile" 
+          className="w-full h-full object-cover"
+        />
 
               </div>
               <div className="text-center md:text-left">
@@ -294,6 +294,6 @@ export default function PatientDashboard() {
         </motion.div>
       </div>
     </motion.div>
-    </div>
-  );
+    </div>
+  );
 }

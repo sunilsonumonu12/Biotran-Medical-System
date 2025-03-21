@@ -71,6 +71,7 @@ const AppContextProvider = (props) => {
     doctors,
     setDoctors,
     user,
+    setUser,
     token,
     login: handleLogin,
     logout: handleLogout,

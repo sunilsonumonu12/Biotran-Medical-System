@@ -2,6 +2,8 @@ import userModel from '../models/userModel.js';
 import validator from 'validator';
 import upload from '../middlewares/multer.js';
 import jwt from 'jsonwebtoken';
+import doctorModel from '../models/doctorModel.js';
+import User from '../models/userModel.js';
 const signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -206,6 +208,48 @@ const getCurrentUser = async (req, res) => {
     });
   }
 };
+export const assignDoctor = async (req, res) => {
+  try {
+    // We receive the patient's email and the doctor's email
+    const { patientEmail, doctorEmail } = req.body;
+
+    // 1. Find the patient by email
+    const patient = await userModel.findOne({ email: patientEmail });
+    if (!patient) {
+      return res.status(404).json({ success: false, message: "Patient not found" });
+    }
+
+    // 2. Find the doctor by email
+    const doctor = await doctorModel.findOne({ email: doctorEmail });
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: "Doctor not found" });
+    }
+
+    // 3. Update patient's document to store the doctor's email
+    patient.doctorAssigned = doctorEmail;
+    await patient.save();
+
+    // 4. Add the patient's email to the doctor's "patients" array (if not already present)
+    if (!doctor.patients.includes(patientEmail)) {
+      doctor.patients.push(patientEmail);
+      await doctor.save();
+    }
+
+    return res.json({
+      success: true,
+      message: "Doctor assigned successfully",
+      updatedPatient: patient
+    });
+  } catch (error) {
+    console.error("Error assigning doctor:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message
+    });
+  }
+};
+
 export const updateUserDocuments = async (req, res) => {
   try {
       const { email } = req.body;
@@ -277,6 +321,40 @@ const getUsers = async (req, res) => {
   }
 };
 
+// Assign a doctor to a patient
+export const assignDoctorToPatient = async (req, res) => {
+  try {
+    const { userId, doctorId } = req.body;
+
+    // Ensure doctor exists
+    const doctor = await doctorModel.findById(doctorId);
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: "Doctor not found" });
+    }
+
+    // Update the patient’s assigned doctor
+    const updatedUser = await userModel.findByIdAndUpdate(
+      userId,
+      { doctorAssigned: doctorId },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Add patient to the doctor's list if not already present
+    if (!doctor.patients.includes(userId)) {
+      doctor.patients.push(userId);
+      await doctor.save();
+    }
+
+    res.json({ success: true, message: "Doctor assigned successfully", user: updatedUser });
+  } catch (error) {
+    console.error("Error assigning doctor:", error);
+    res.status(500).json({ success: false, message: "Server error", error: error.message });
+  }
+};
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;

@@ -1,6 +1,6 @@
-import doctorModel from '../models/doctorModel.js';
 import jwt from 'jsonwebtoken';
-
+import doctorModel from "../models/doctorModel.js";
+import userModel from "../models/userModel.js";
 export const getAllDoctors = async (req, res) => {
   try {
     // Fetch only name, email, and password fields for all doctors
@@ -21,6 +21,33 @@ export const getAllDoctors = async (req, res) => {
     });
   }
 };
+
+
+export const getCurrentDoctor = async (req, res) => {
+  try {
+    const doctorId = req.user.id; // Assuming doctor is authenticated and req.user contains doctor info
+
+    const doctor = await doctorModel.findById(doctorId).populate("patients", "name email age phone");
+
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: "Doctor not found" });
+    }
+
+    res.json({ 
+      success: true, 
+      doctor: {
+        name: doctor.name,
+        email: doctor.email,
+        speciality: doctor.speciality,
+        patients: doctor.patients // List of patients assigned to this doctor
+      } 
+    });
+  } catch (error) {
+    console.error("Error fetching doctor data:", error);
+    res.status(500).json({ success: false, message: "Server error", error: error.message });
+  }
+};
+
 
 export const login = async (req, res) => {
     try {
@@ -149,19 +176,3 @@ export const signup = async (req, res) => {
   }
 };
 
-export const getCurrentDoctor = async (req, res) => {
-  try {
-    // The verifyToken middleware should have added req.user
-    const doctor = await doctorModel.findById(req.user.id);
-    if (!doctor) {
-      return res.status(404).json({ success: false, message: "Doctor not found" });
-    }
-    res.json({ success: true, doctor });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-      error: error.message
-    });
-  }
-};
