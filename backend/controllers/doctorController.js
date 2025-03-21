@@ -4,7 +4,7 @@ import userModel from "../models/userModel.js";
 export const getAllDoctors = async (req, res) => {
   try {
     // Fetch only name, email, and password fields for all doctors
-    const doctors = await doctorModel.find({}, 'name email password');
+    const doctors = await doctorModel.find({}, 'name email password patients');
     console.log("Doctors fetched successfully:", doctors);
 
     res.status(200).json({
@@ -22,6 +22,50 @@ export const getAllDoctors = async (req, res) => {
   }
 };
 
+export const searchDoctor = async (req, res) => {
+  try {
+    const { name } = req.query;
+    
+    if (!name) {
+      return res.status(400).json({
+        success: false,
+        message: "Doctor name is required"
+      });
+    }
+
+    // Case-insensitive search for doctor name
+    const doctor = await doctorModel.findOne({
+      name: { $regex: new RegExp(name, 'i') }
+    }).populate('patients', 'name email phone age bloodGroup');
+
+    if (!doctor) {
+      return res.status(404).json({
+        success: false,
+        message: "Doctor not found"
+      });
+    }
+
+    res.json({
+      success: true,
+      doctor: {
+        _id: doctor._id,
+        name: doctor.name,
+        email: doctor.email,
+        speciality: doctor.speciality,
+        patients: doctor.patients || [],
+        degree: doctor.degree,
+        experience: doctor.experience
+      }
+    });
+  } catch (error) {
+    console.error("Error searching doctor:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error searching doctor",
+      error: error.message
+    });
+  }
+};
 
 export const getCurrentDoctor = async (req, res) => {
   try {

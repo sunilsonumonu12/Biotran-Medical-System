@@ -21,7 +21,7 @@ import Insurance from './pages/Insurance';
 import Document from './pages/Document';
 import PatientDashboard from './pages/Dashboard';
 import Dashboard from './pages/Admin';
-
+import DoctorPatients from "./pages/DoctorPatients";
 const App = () => {
   useEffect(() => {
     // Check for user preference or default to light theme
@@ -45,6 +45,7 @@ const App = () => {
               <Route path="/login" element={<Login />} />
               //"/my-profile/dashboard"
               <Route path="/get-doctor" element={<GetDoctor />} />
+              <Route path="/my-profile/insurance" element={<DoctorPatients />} />
               <Route path="/add-doctor" element={<AddDoctor />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="my-profile/dashboard" element={<MyProfile />} />

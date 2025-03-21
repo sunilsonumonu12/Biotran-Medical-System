@@ -5,7 +5,6 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
   password: { type: String, required: true },
-  doctorAssigned: { type: String, default: "None" },
   image: {
     base64: { type: String, required: true, default: "iVBORw0KGgoAAAANSUhEUgAAAPAAAADwCAYAAAA+VemSAAAACXBIWXMAABCcAAAQnAEmzTo0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAA5uSURBVHgB7d0JchvHFcbxN+" },
     mimeType: { type: String, required: true, default: "image/png" }
@@ -41,7 +40,16 @@ const userSchema = new mongoose.Schema({
   allergies: { type: String, default: "None" },
   vaccinationHistory: { type: String, default: "None" },
   healthInsurancePolicy: { type: String, default: "None" },
-  doctorAssigned: { type: String, default: "None" },
+  doctorAssigned: {
+    name: {
+      type: String,
+      default: null
+    },
+    email: {
+      type: String,
+      default: null
+    }
+  },
   prescriptionPdf: { 
     data: Buffer, 
     contentType: String 

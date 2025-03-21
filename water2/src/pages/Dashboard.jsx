@@ -174,6 +174,21 @@ export default function PatientDashboard() {
                 <p className="text-gray-600">
                   <span className="font-medium">Age:</span> {user?.age}
                 </p>
+                <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+      <p className="text-gray-700 font-medium mb-2">Assigned Doctor</p>
+      {user?.doctorAssigned?.name ? (
+        <div>
+          <p className="text-gray-600">
+            <span className="font-medium">Name:</span> {user.doctorAssigned.name}
+          </p>
+          <p className="text-gray-600 text-sm">
+            <span className="font-medium">Email:</span> {user.doctorAssigned.email}
+          </p>
+        </div>
+      ) : (
+        <p className="text-gray-500 italic">No doctor assigned</p>
+      )}
+    </div>
               </div>
             </motion.div>
 
