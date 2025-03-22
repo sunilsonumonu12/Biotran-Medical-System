@@ -52,12 +52,12 @@ const Login = () => {
         // Set default Authorization header for future requests
         axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
 
-        // Update the auth context; note that the response field differs based on role
         if (isDoctor) {
-          login(response.data.doctor, response.data.token);
+          login(response.data.doctor, response.data.token, true);
         } else {
-          login(response.data.user, response.data.token);
+          login(response.data.user, response.data.token, false);
         }
+
 
         toast.success('Login successful!');
         navigate('/');

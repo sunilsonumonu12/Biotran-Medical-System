@@ -22,6 +22,7 @@ import Document from './pages/Document';
 import PatientDashboard from './pages/Dashboard';
 import Dashboard from './pages/Admin';
 import DoctorPatients from "./pages/DoctorPatients";
+import Doctordashboard from "./pages/Dashboard1";
 const App = () => {
   useEffect(() => {
     // Check for user preference or default to light theme
@@ -57,7 +58,7 @@ const App = () => {
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/my-profile" element={<PatientDashboard />} />
-              <Route path="/my-appointments" element={<MyAppointments />} />
+              <Route path="/my-appointments" element={<Doctordashboard />} />
               <Route path="/appointment/:docId" element={<Appointment />} />
               <Route path="/admin/dashboard" element={<Dashboard />} />
             </Routes>

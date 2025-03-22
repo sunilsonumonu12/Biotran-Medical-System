@@ -22,6 +22,42 @@ export const getAllDoctors = async (req, res) => {
   }
 };
 
+
+export const getDoctorPatientEmails = async (req, res) => {
+  try {
+    // Use the doctor email from the verified token
+    const doctorEmail = req.user.email;
+    console.log("getDoctorPatientEmails called with user:", req.user);
+    const doctor = await doctorModel.findOne({ email: doctorEmail });
+
+    if (!doctor) {
+      return res.status(404).json({
+        success: false,
+        message: "Doctor not found"
+      });
+    }
+    console.log("hi");
+
+    // Map over the patients array to return only the email field for each patient
+    const patientEmails = doctor.patients.map(patient => ({
+      email: patient.email
+    }));
+
+    console.log("Patient emails fetched successfully:", patientEmails);
+
+    return res.status(200).json({
+      success: true,
+      patients: patientEmails
+    });
+  } catch (error) {
+    console.error("Error fetching patient emails:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message
+    });
+  }
+};
 export const searchDoctor = async (req, res) => {
   try {
     const { name } = req.query;

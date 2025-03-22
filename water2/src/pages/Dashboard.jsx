@@ -309,6 +309,6 @@ export default function PatientDashboard() {
         </motion.div>
       </div>
     </motion.div>
-    </div>
-  );
+</div>
+);
 }
